@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { DarkTheme, Text, Title } from 'react-native-paper';
+import { ActivityIndicator, DarkTheme, Text, Title } from 'react-native-paper';
 
 import DropDown from 'react-native-paper-dropdown';
 
@@ -44,6 +44,10 @@ export default function App() {
             <Text style={styles.weatherText}>Humedad: {weather.main.humidity}%</Text>
             <Text style={styles.weatherText}>Viento: {weather.wind.speed} m/s</Text>
           </View>
+        ) || (
+          <View>
+            <ActivityIndicator animating={true} color={DarkTheme.colors.primary} style={styles.loadAnimation} />
+          </View>
         )
       }
     </View>
@@ -69,5 +73,8 @@ const styles = StyleSheet.create({
   },
   weatherIcon: {
     alignSelf: 'center'
+  },
+  loadAnimation: {
+    marginTop: 50
   }
 });

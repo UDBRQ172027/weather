@@ -12,13 +12,16 @@ import { Ionicons } from '@expo/vector-icons';
 export default function App() {
 
   const [showWeather, setShowWeather] = useState(false)
+  const [loading, setLoading] = useState(false)
 
   const [municipality, setMunicipality] = useState(null)
   const [weather, setWeather] = useState(null);
   const getWeather = async (municipality) => {
     setWeather(null)
+    setLoading(true)
     setMunicipality(municipality)
     setWeather(await WeatherService.getCurrentWeather(municipality))
+    setLoading(false)
   }
 
   return (
@@ -46,7 +49,13 @@ export default function App() {
           </View>
         ) || (
           <View>
-            <ActivityIndicator animating={true} color={DarkTheme.colors.primary} style={styles.loadAnimation} />
+            { 
+              loading ? (
+                <ActivityIndicator animating={true} color={DarkTheme.colors.primary} style={styles.loadAnimation} />
+              ): (
+                <></>
+              )
+            }
           </View>
         )
       }

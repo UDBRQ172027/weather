@@ -1,21 +1,73 @@
-import { StatusBar } from 'expo-status-bar';
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, View } from 'react-native';
+import { DarkTheme, Text, Title } from 'react-native-paper';
+
+import DropDown from 'react-native-paper-dropdown';
+
+import CatalogueService from './services/CatalogueService';
+import WeatherService from './services/WeatherService';
+import { TEMPSIMBOL } from '@env';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function App() {
+
+  const [showWeather, setShowWeather] = useState(false)
+
+  const [municipality, setMunicipality] = useState(null)
+  const [weather, setWeather] = useState(null);
+  const getWeather = async (municipality) => {
+    setWeather(null)
+    setMunicipality(municipality)
+    setWeather(await WeatherService.getCurrentWeather(municipality))
+  }
+
   return (
     <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
+      <DropDown
+        label='Municipio'
+        mode='outlined'
+        visible={showWeather}
+        showDropDown={() => setShowWeather(true)}
+        onDismiss={() => setShowWeather(false)}
+        value={municipality}
+        setValue={getWeather}
+        list={CatalogueService.getCities()}
+      />
+      {
+        weather && (
+          <View>
+            <Title style={styles.titleName}>{weather.name}</Title>
+            <Ionicons name={CatalogueService.getIcon()[weather.weather[0]['icon']]} color='white' size={60} style={styles.weatherIcon} />
+            <Text style={styles.weatherText}><Ionicons name='thermometer-outline' size={20}/>{weather.main.temp}{TEMPSIMBOL}</Text>
+            <Text style={styles.weatherText}>{weather.weather[0]['main']}</Text>
+            <Text style={styles.weatherText}>Minimo: {weather.main.temp_min}{TEMPSIMBOL} - Maximo: {weather.main.temp_max}{TEMPSIMBOL}</Text>
+            <Text style={styles.weatherText}>Humedad: {weather.main.humidity}%</Text>
+            <Text style={styles.weatherText}>Viento: {weather.wind.speed} m/s</Text>
+          </View>
+        )
+      }
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
+    padding: 20,
+    paddingTop: 40,
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: DarkTheme.colors.background,
   },
+  titleName: {
+    marginTop: 20,
+    textAlign: 'center',
+    fontSize: 30
+  },
+  weatherText: {
+    marginTop: 20,
+    textAlign: 'center',
+    fontSize: 20
+  },
+  weatherIcon: {
+    alignSelf: 'center'
+  }
 });
